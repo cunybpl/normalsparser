@@ -1,4 +1,7 @@
 ## normalsparser 
+----------------
+
+[![CI](https://github.com/bsnacks000/normalsparser/actions/workflows/CI.yaml/badge.svg)](https://github.com/bsnacks000/normalsparser/actions/workflows/CI.yaml)
 
 A small library that parses hourly normalized wheaher data files found in `ftp://ftp.ncdc.noaa.gov/pub/data/normals/1981-2010/products/hourly/`. 
 
