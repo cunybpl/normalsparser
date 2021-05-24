@@ -174,9 +174,13 @@ class LineObjectFilter(object):
         """
         self._identifiers = identifiers
     
-    def filter(self, lines: str) -> List[str]:
-        """Filters a list of line strings by the given key. Also assures that the strings 
+    def filter(self, lines: Union[str, bytes], bytes_string: bool=False) -> List[List[str]]:
+        """Filters a list of line strings by the identifiers. Also assures that the strings 
         are formatted appropriately for NormalsRecordFactory.
+
+        Args:
+            lines (Union[str, bytes]): list of str or bytes from noaa.
+            bytes_string (bool, optional): A flag to indicate the types of incoming data. Defaults to False.
 
         Returns:
             List[List[str]]: A list of lists of strings parsed from the lines
@@ -184,6 +188,11 @@ class LineObjectFilter(object):
         
         # note that his makes an assumption that id is always 10 chars.. i believe it is consistent
         # This call to filter speeds the whole thing up alot
-        lines = list(filter(lambda line: line[:11] in self._identifiers, lines))
+        identifiers = self._convert_list_str_to_bytes(self._identifiers) if bytes_string else self._identifiers
+        lines = list(filter(lambda line: line[:11] in identifiers, lines))
+        lines = [l.decode() for l in lines] if bytes_string else lines
         return [[ item for item in l.replace('\n', '').split(' ') if item != ''] for l in lines]
-        
+
+    def _convert_list_str_to_bytes(self, tuple_str: Tuple[str]) -> Tuple[bytes]:
+        """convert a tuple of string into a tuple of bytes"""
+        return tuple((bytes(i, 'ascii') for i in tuple_str))
