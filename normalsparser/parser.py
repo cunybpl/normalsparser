@@ -14,17 +14,19 @@ FLAGS = {
             computed using a pseudonormals approach or derived from monthly pseudonormals."""
 }
 
-        
-class NormalsMeasure(object): 
-    __slots__ = ('_scaling_factor', '_value')
-    _flags = FLAGS
-    _missing = {
+MISSING = {
         '-9999': (None, 'Missing'), 
         '-7777': (0.0, 'a non-zero value that would round to zero, for variables bound by zero.'),
         '-6666': (None, """parameter undefined; used in precipitation/snowfall/snow depth percentiles 
            when number of nonzero values is insufficient"""),
         '-5555':(None, 'parameter not available because it was inconsistent with another parameter'),
     }
+
+        
+class NormalsMeasure(object): 
+    __slots__ = ('_scaling_factor', '_value')
+    _flags = FLAGS
+    _missing = MISSING 
     
     def __init__(self, scaling_factor: int=10) -> None:
         """Represents the numeric values parsed from a single line of text from a
