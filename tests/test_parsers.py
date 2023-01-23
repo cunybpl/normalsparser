@@ -30,6 +30,9 @@ def test_normalsmeasure():
     m.set_value('-7777')
     assert m.schema()['value'] == 0
 
+    m.set_value('-7777C')
+    assert m.schema()['value'] == 0
+
 
 
 def test_normals_record(mocker):

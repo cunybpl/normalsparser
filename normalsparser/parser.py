@@ -14,19 +14,48 @@ FLAGS = {
             computed using a pseudonormals approach or derived from monthly pseudonormals."""
 }
 
-MISSING = {
+        
+class NormalsMeasure(object): 
+    __slots__ = ('_scaling_factor', '_value')
+    _flags = FLAGS
+    _missing = {
         '-9999': (None, 'Missing'), 
         '-7777': (0.0, 'a non-zero value that would round to zero, for variables bound by zero.'),
         '-6666': (None, """parameter undefined; used in precipitation/snowfall/snow depth percentiles 
            when number of nonzero values is insufficient"""),
         '-5555':(None, 'parameter not available because it was inconsistent with another parameter'),
-    }
 
-        
-class NormalsMeasure(object): 
-    __slots__ = ('_scaling_factor', '_value')
-    _flags = FLAGS
-    _missing = MISSING 
+        #plain+flag since special values are not exactly explained in normal files; there were cases with -7777C
+        '-9999C': (None, 'Missing'), 
+        '-7777C': (0.0, 'a non-zero value that would round to zero, for variables bound by zero.'),
+        '-6666C': (None, """parameter undefined; used in precipitation/snowfall/snow depth percentiles 
+           when number of nonzero values is insufficient"""),
+        '-5555C':(None, 'parameter not available because it was inconsistent with another parameter'),
+
+        '-9999S': (None, 'Missing'), 
+        '-7777S': (0.0, 'a non-zero value that would round to zero, for variables bound by zero.'),
+        '-6666S': (None, """parameter undefined; used in precipitation/snowfall/snow depth percentiles 
+           when number of nonzero values is insufficient"""),
+        '-5555S':(None, 'parameter not available because it was inconsistent with another parameter'),
+
+        '-9999R': (None, 'Missing'), 
+        '-7777R': (0.0, 'a non-zero value that would round to zero, for variables bound by zero.'),
+        '-6666R': (None, """parameter undefined; used in precipitation/snowfall/snow depth percentiles 
+           when number of nonzero values is insufficient"""),
+        '-5555R':(None, 'parameter not available because it was inconsistent with another parameter'),
+
+        '-9999P': (None, 'Missing'), 
+        '-7777P': (0.0, 'a non-zero value that would round to zero, for variables bound by zero.'),
+        '-6666P': (None, """parameter undefined; used in precipitation/snowfall/snow depth percentiles 
+           when number of nonzero values is insufficient"""),
+        '-5555P':(None, 'parameter not available because it was inconsistent with another parameter'),
+
+        '-9999Q': (None, 'Missing'), 
+        '-7777Q': (0.0, 'a non-zero value that would round to zero, for variables bound by zero.'),
+        '-6666Q': (None, """parameter undefined; used in precipitation/snowfall/snow depth percentiles 
+           when number of nonzero values is insufficient"""),
+        '-5555Q':(None, 'parameter not available because it was inconsistent with another parameter'),
+    }
     
     def __init__(self, scaling_factor: int=10) -> None:
         """Represents the numeric values parsed from a single line of text from a
@@ -176,13 +205,9 @@ class LineObjectFilter(object):
         """
         self._identifiers = identifiers
     
-    def filter(self, lines: Union[str, bytes], bytes_string: bool=False) -> List[List[str]]:
-        """Filters a list of line strings by the identifiers. Also assures that the strings 
+    def filter(self, lines: str) -> List[str]:
+        """Filters a list of line strings by the given key. Also assures that the strings 
         are formatted appropriately for NormalsRecordFactory.
-
-        Args:
-            lines (Union[str, bytes]): list of str or bytes from noaa.
-            bytes_string (bool, optional): A flag to indicate the types of incoming data. Defaults to False.
 
         Returns:
             List[List[str]]: A list of lists of strings parsed from the lines
@@ -190,11 +215,6 @@ class LineObjectFilter(object):
         
         # note that his makes an assumption that id is always 10 chars.. i believe it is consistent
         # This call to filter speeds the whole thing up alot
-        identifiers = self._convert_list_str_to_bytes(self._identifiers) if bytes_string else self._identifiers
-        lines = list(filter(lambda line: line[:11] in identifiers, lines))
-        lines = [l.decode() for l in lines] if bytes_string else lines
+        lines = list(filter(lambda line: line[:11] in self._identifiers, lines))
         return [[ item for item in l.replace('\n', '').split(' ') if item != ''] for l in lines]
-
-    def _convert_list_str_to_bytes(self, tuple_str: Tuple[str]) -> Tuple[bytes]:
-        """convert a tuple of string into a tuple of bytes"""
-        return tuple((bytes(i, 'ascii') for i in tuple_str))
+        
